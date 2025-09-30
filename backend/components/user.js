@@ -52,7 +52,7 @@ const register = async (req, res) => {
     secure: false,
     auth: {
       user: "tv293435@gmail.com",
-      pass: "mzql xkwx uozi hjog",
+      pass: "mzqig",
     },
   });
 
