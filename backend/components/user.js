@@ -1,5 +1,7 @@
 const User = require('../modals/user.js');
-const sendcookie = require('../utils/cookie.js');  // Assuming sendcookie is defined in utils/sendcookie.js
+const sendcookie = require('../utils/cookie.js');  
+const tempUsers = {}; // Temporary storage for users
+const nodemailer = require('nodemailer');
 const login=async (req, res) => {
     try {
         if (!req.body) {
@@ -40,9 +42,40 @@ const register = async (req, res) => {
         if (existingUser) {
            return res.status(400).json({message: "User already exists"});
         } else {
-            const newUser = new User({ name, email, password ,picture});
-            const savedUser = await newUser.save();
-           return res.status(201).json({message: "User registered successfully", user: {name: savedUser.name, email: savedUser.email}});
+
+  const Token = Math.floor(100000 + Math.random() * 900000);
+
+  // Send OTP
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "tv293435@gmail.com",
+      pass: "mzql xkwx uozi hjog",
+    },
+  });
+
+  try {
+    await transporter.sendMail({
+      from: `"Library Management" <tv293435@gmail.com>`,
+      to: email,
+      subject: "Verify Your Email",
+      text: `Your verification code is ${Token}`,
+      html: `<b>Your verification code is ${Token}</b>`,
+    });
+
+    // Store in temp (you can use DB with expiration if needed)
+    tempUsers[email] = { name, password, Token };
+    console.log(tempUsers[email].Token);
+    res.status(200).json({ message: "OTP sent to email" });
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    res.status(500).json({ message: "Failed to send verification email" });
+  }
+            
+            
+        //    return res.status(201).json({message: "User registered successfully", user: {name: savedUser.name, email: savedUser.email}});
         }
     } catch (error) {
         console.error("Register error:", error);
@@ -55,6 +88,24 @@ const me = (req, res) => {
     }
     res.status(200).json({ user: req.user });
 };
+const verifyEmail = async (req, res) => {
+    const { email, Token } = req.body;
+  
+    const tempUser = tempUsers[email];
+            console.log(tempUser.Token);
+        console.log(tempUser.email);
+    if (!tempUser) return res.status(400).json({ message: "No OTP requested for this email" });
+  
+    if (tempUser.Token == Token) {
+
+        await User.create({ name: tempUser.name, email, password: tempUser.password, isVerified: true, picture: tempUser.picture });
+        // const savedUser = await newUser.save();
+      delete tempUsers[email]; // Clean up
+      return res.status(200).json({ message: "Email verified and user registered" });
+    } else {
+      return res.status(400).json({ message: "Invalid verification token" });
+    }
+  };
 const allUsers = async (req, res) => {
     const keyword = req.query.search ? {
         $or: [
@@ -82,5 +133,6 @@ module.exports = {
     register,
     me,
     allUsers,
-    logout
+    logout,
+    verifyEmail
 };

@@ -75,6 +75,7 @@ export default function Signup() {
         { withCredentials: true }
       );
       toast.success(response.data.message);
+      navigate('/verify');
       // navigate("/verifyemail");
     } catch (error) {
       toast.error(error.response?.data?.message || "Signup failed");

@@ -23,7 +23,7 @@ export default function Login() {
         }
       }, [isAuthenticated, Navigate]);
     const submithandle=async (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         try {
             const { data } = await axios.post(
                 "http://localhost:3000/users/login",
@@ -38,7 +38,7 @@ export default function Login() {
                 // setUser(data.user);
 
               }
-              else  { Navigate("/");}
+              else  { Navigate("/chats");}
                            setIsAuthenticated(true);
                            console.log(data.message);
                           //  setIsAdmin(true);

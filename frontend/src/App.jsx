@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
-import Verifyemail from './pages/Verifyemail';
+import VerifyEmail from './pages/Verifyemail';
 import Chats from './pages/Chats';
 import { Context } from './main';
 import { useContext, useEffect } from "react"; 
@@ -32,10 +32,10 @@ function App() {
       <>
         <Routes>
           <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<Chats />} />
+          <Route path="/" element={<Login />} />
           <Route path="/chats" element={<Chats />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/verifyemail" element={<Verifyemail />} />
+          <Route path="/verify" element={<VerifyEmail />} />
         </Routes>
         <Toaster />
       </>

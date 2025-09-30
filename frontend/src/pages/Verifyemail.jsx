@@ -1,67 +1,69 @@
-import { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import styles from "../login.module.css";
-import { Context } from '../main';
+import React, { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import "./verify.css"; // 👈 link CSS
 
-export default function Verifyemail() {
-  const { setIsAuthenticated } = useContext(Context);
-  const [formData, setFormData] = useState({
-    email: "",
-    verificationToken: ""
-  });
-
+const VerifyEmail = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleverify = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post(
-        "https://librarymanagementbackend-p352.onrender.com/verifyemail",
-        formData,
-        { withCredentials: true }
+        "http://localhost:3000/users/verify",
+        { email, token },
+        { headers: { "Content-Type": "application/json" }, withCredentials: true }
       );
       toast.success(response.data.message);
-      navigate("/login");  // ✅ lowercase route
+      navigate("/login");
     } catch (error) {
       toast.error(error.response?.data?.message || "Verification failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.authBox}>
-        <h2 className={styles.title}>Verify Email</h2>
-        <form className={styles.form} onSubmit={handleverify}>
+    <div className="verify-container">
+      <div className="verify-card">
+        <h2 className="verify-title">Verify Your Email ✨</h2>
+        <form onSubmit={handleSubmit} className="verify-form">
           <input
-            className={styles.input}
             type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="verify-input"
             required
           />
           <input
-            className={styles.input}
             type="text"
-            name="verificationToken"  // ✅ FIXED
-            placeholder="Verification Code"
-            value={formData.verificationToken}
-            onChange={handleChange}
+            placeholder="Enter your OTP/token"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            className="verify-input"
             required
           />
-          <button className={styles.button} type="submit">VERIFY</button>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`verify-button ${loading ? "disabled" : ""}`}
+          >
+            {loading ? "Verifying..." : "Verify Email 🚀"}
+          </button>
         </form>
-        <p className={styles.toggleText}>
-          Already have an account? <Link className={styles.toggleButton} to="/login">Login</Link>
+        <p className="verify-footer">
+          Didn’t receive a token?{" "}
+          <span className="resend">Resend</span>
         </p>
       </div>
     </div>
   );
-}
+};
+
+export default VerifyEmail;

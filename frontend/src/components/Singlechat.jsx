@@ -5,36 +5,97 @@ import Profilemodal from "./ui/Profilemodal.jsx";
 import UpdatedGroupChatModal from './ui/UpdatedGroupChatModal';
 import { Spinner, FormControl, Input, Button } from '@chakra-ui/react';
 import axios from "axios";
+import io from 'socket.io-client'; // Add this import
+
+var socket, selectedChatCompare; 
 
 const Singlechat = ({ fetchAgain, setFetchAgain }) => {
+  const [socketConnected, setSocketConnected] = useState(false);
   const { user, selectedChat } = useContext(Context);
   const [showProfile, setShowProfile] = useState(false);
   const [loading, setLoading] = useState(false);  
   const [newMessage, setNewMessage] = useState(""); 
-  const [chat,setChat]=useState(null);
-  const [messages, setMessages] = useState([]); // Initialize as empty array instead of null
+  const [chat, setChat] = useState(null);
+  // const [messages, setMessages] = useState([]);
 
   if (!selectedChat) return <div>No chat selected</div>;
 
   // Send message to backend
   const getChat = async () => {
     if (!selectedChat) return;
-    const { data } = await axios.get(
-      `http://localhost:3000/messages/${selectedChat._id}`,
-      { withCredentials: true, headers: { "Content-Type": "application/json" } }
-    );
-    setChat({ messages: data });
+    try {
+      const { data } = await axios.get(
+        `http://localhost:3000/messages/${selectedChat._id}`,
+        { withCredentials: true, headers: { "Content-Type": "application/json" } }
+      );
+      setChat({ messages: data });
+      
+      // Only emit if socket is connected
+      if (socket && socketConnected) {
+        socket.emit("join chat", selectedChat._id);
+      }
+    } catch (error) {
+      console.error("Error fetching chat:", error);
+    }
   }
+
   useEffect(() => {
-    getChat();
-  }, [selectedChat]);
+    // Initialize socket connection
+    socket = io("http://localhost:3000");
+    socket.emit("setup", user);
+    
+    socket.on("connected", () => {
+      console.log("Socket connected");
+      setSocketConnected(true);
+    });
+
+    // Cleanup function
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (socketConnected && selectedChat) {
+      getChat();
+      selectedChatCompare = selectedChat; // Set the compare variable
+    }
+  }, [selectedChat, socketConnected]);
+
+  useEffect(() => {
+    // Only set up message listener when socket is connected
+    if (socket && socketConnected) {
+      socket.on("message received", (newMessageReceived) => {
+        if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
+          // give notification
+          console.log("Message received for different chat");
+        } else {
+          // Add the new message to current chat
+          setChat((prevChat) => ({
+            ...prevChat,
+            messages: [...(prevChat ? prevChat.messages : []), newMessageReceived],
+          }));
+        }
+      });
+    }
+
+    // Cleanup listener
+    return () => {
+      if (socket) {
+        socket.off("message received");
+      }
+    };
+  }, [socketConnected, selectedChat]);
 
   const sendMessage = async (event) => {
     event.preventDefault();
     if (!newMessage.trim()) return;
     setLoading(true);
+    
     try {
-      await axios.post(
+      const { data } = await axios.post(
         "http://localhost:3000/messages/",
         {
           chatId: selectedChat._id,
@@ -45,10 +106,18 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
           withCredentials: true,
         }
       );
+      
       setNewMessage("");
-      setFetchAgain && setFetchAgain((prev) => !prev);
+      
+      // Emit the new message via socket to other users
+      if (socket && socketConnected) {
+        socket.emit("new message", data);
+      }
+      setChat((prevChat) => ({
+        ...prevChat,
+        messages: [...(prevChat ? prevChat.messages : []), data],
+      }));
     } catch (error) {
-      // You can show a toast here if you want
       console.error("Send message error:", error);
     }
     setLoading(false);
@@ -66,7 +135,7 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
     otherUser = null;
   } else {
     otherUser = getSenderFull(user, selectedChat.users);
-    chatTitle = otherUser? otherUser.name : "Unknown User";
+    chatTitle = otherUser ? otherUser.name : "Unknown User";
     chatAvatar = otherUser ? otherUser.pic : null;
   }
 
