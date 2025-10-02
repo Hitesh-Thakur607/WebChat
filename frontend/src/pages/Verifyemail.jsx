@@ -20,7 +20,7 @@ const VerifyEmail = () => {
         { headers: { "Content-Type": "application/json" }, withCredentials: true }
       );
       toast.success(response.data.message);
-      navigate("/login");
+      navigate("/loginz");
     } catch (error) {
       toast.error(error.response?.data?.message || "Verification failed");
     } finally {

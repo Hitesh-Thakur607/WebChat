@@ -1,6 +1,6 @@
 const User = require("../modals/user.js");
 const Message = require("../modals/message.js");
-const Chat = require("/home/hitesh-thakur/Documents/VSCode/Webchat/backend/modals/chatmodel.js");
+const Chat = require("../modals/chatmodel.js");
 const sendMessage=async (req, res)=>{
     const { chatId, content } = req.body;
     

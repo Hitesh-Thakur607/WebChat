@@ -1,9 +1,12 @@
-// const req = require("express/lib/request");
-const isauthenticated =require("./middleware/authentication.js");
+const req = require("express/lib/request");
+// const isauthenticated =require("./middleware/authentication.js");
 const dotenv = require("dotenv");
-const messageRoutes = require("/home/hitesh-thakur/Documents/VSCode/Webchat/backend/routes/messages.js");
+const messageRoutes = require("./routes/messages.js");
+const userRoutes = require("./routes/user.js");
+const chatRoutes = require("./routes/chatRoutes.js");
 const cors = require("cors");
 const connectdb = require("./data/data.js");
+const path = require("path"); // Add this import
 dotenv.config();
 
 const express=require("express");
@@ -19,17 +22,10 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-const userRoutes = require("./routes/user.js");
-const chatRoutes = require("./routes/chatRoutes.js");
+
 app.use("/users", userRoutes);
 app.use("/chats", chatRoutes);
 app.use("/messages", messageRoutes);
-app.get("/", (req, res) => {
-    res.send("Hello World!");
-});
-app.get("/chats", isauthenticated, (req, res) => {
-    res.send("This is the chat route");
-}); 
 
 const PORT = process.env.PORT;
 const server=app.listen(PORT, () => {
@@ -72,3 +68,14 @@ io.on("connection",(socket)=>{
         console.log("User disconnected");
     });
 });
+const __dirname1 = path.resolve(__dirname, "..");
+
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname1, "/frontend/dist")));
+
+    app.get(/^\/(?!api).*/, (req, res) => {
+        res.sendFile(path.join(__dirname1, "/frontend/dist/index.html"));
+    });
+} 
+

@@ -1,4 +1,4 @@
-const e = require("cors");
+// const e = require("cors");
 const isauthenticated = require("../middleware/authentication.js");
 const { sendMessage,allMessages } = require("../components/messages.js");
 const express = require("express");

@@ -24,18 +24,18 @@ function App() {
           toast.error("Please Login or create account");
           setUser({});
           setIsAuthenticated(false);
-          navigate("/login");
+          navigate("/loginz");
         });
     }, []);
 
     return (
       <>
         <Routes>
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/signupz" element={<Signup />} />
           <Route path="/" element={<Login />} />
-          <Route path="/chats" element={<Chats />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/verify" element={<VerifyEmail />} />
+          <Route path="/chatz" element={<Chats />} />
+          <Route path="/loginz" element={<Login />} />
+          <Route path="/verifyz" element={<VerifyEmail />} />
         </Routes>
         <Toaster />
       </>

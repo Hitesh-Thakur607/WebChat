@@ -19,7 +19,7 @@ export default function Login() {
     // }
     useEffect(() => {
         if (isAuthenticated) {
-          Navigate("/chats");
+          Navigate("/chatz");
         }
       }, [isAuthenticated, Navigate]);
     const submithandle=async (e) => {
@@ -38,7 +38,7 @@ export default function Login() {
                 // setUser(data.user);
 
               }
-              else  { Navigate("/chats");}
+              else  { Navigate("/chatz");}
                            setIsAuthenticated(true);
                            console.log(data.message);
                           //  setIsAdmin(true);
@@ -78,7 +78,7 @@ export default function Login() {
                          <button className={styles.button} type="submit">Login</button>
                        </form>
                        <p className={styles.toggleText}>
-                         Or <Link className={styles.toggleButton} to="/signup">Sign Up</Link>
+                         Or <Link className={styles.toggleButton} to="/signupz">Sign Up</Link>
                        </p>
                      </div>
                    </div>

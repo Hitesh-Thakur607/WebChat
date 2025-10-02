@@ -1,5 +1,5 @@
-const Chat = require('/home/hitesh-thakur/Documents/VSCode/Webchat/backend/modals/chatmodel.js');
-const User = require('/home/hitesh-thakur/Documents/VSCode/Webchat/backend/modals/user.js');
+const Chat = require("../modals/chatmodel.js");
+const User = require("../modals/user.js");
 
 const accessChat = async (req, res) => {
     const { userId } = req.body;

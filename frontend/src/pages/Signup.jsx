@@ -15,7 +15,7 @@ export default function Signup() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      Navigate("/chats");
+      Navigate("/chatz");
     }
   }, [isAuthenticated, Navigate]);
 
@@ -75,7 +75,7 @@ export default function Signup() {
         { withCredentials: true }
       );
       toast.success(response.data.message);
-      navigate('/verify');
+      navigate('/verifyz');
       // navigate("/verifyemail");
     } catch (error) {
       toast.error(error.response?.data?.message || "Signup failed");
@@ -126,7 +126,7 @@ export default function Signup() {
           </button>
         </form>
         <p className={styles.toggleText}>
-          Already have an account? <Link className={styles.toggleButton} to="/login">Login</Link>
+          Already have an account? <Link className={styles.toggleButton} to="/loginz">Login</Link>
         </p>
       </div>
     </div>
