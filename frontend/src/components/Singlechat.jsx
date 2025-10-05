@@ -25,7 +25,7 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
     if (!selectedChat) return;
     try {
       const { data } = await axios.get(
-        `http://localhost:3000/messages/${selectedChat._id}`,
+        `https://webchat-5.onrender.com/messages/${selectedChat._id}`,
         { withCredentials: true, headers: { "Content-Type": "application/json" } }
       );
       setChat({ messages: data });
@@ -41,7 +41,7 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     // Initialize socket connection
-    socket = io("http://localhost:3000");
+    socket = io("https://webchat-5.onrender.com");
     socket.emit("setup", user);
     
     socket.on("connected", () => {
@@ -96,7 +96,7 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
     
     try {
       const { data } = await axios.post(
-        "http://localhost:3000/messages/",
+        "https://webchat-5.onrender.com/messages/",
         {
           chatId: selectedChat._id,
           content: newMessage,

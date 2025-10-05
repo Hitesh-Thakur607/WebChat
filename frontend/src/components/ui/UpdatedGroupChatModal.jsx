@@ -36,7 +36,7 @@ const UpdatedGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => 
     try {
       setRenameLoading(true);
       const { data } = await axios.put(
-        "http://localhost:3000/chats/rename",
+        "https://webchat-5.onrender.com/chats/rename",
         {
           chatId: selectedChat._id,
           chatName: groupChatName,
@@ -60,7 +60,7 @@ const UpdatedGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => 
     try {
       setLoading(true);
       const { data } = await axios.get(
-        `http://localhost:3000/users/users/?search=${query}`,
+        `https://webchat-5.onrender.com/users/users/?search=${query}`,
         { withCredentials: true }
       );
       setSearchResult(data);
@@ -79,7 +79,7 @@ const UpdatedGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => 
     try {
       setLoading(true);
       const { data } = await axios.put(
-        "http://localhost:3000/chats/groupadd",
+        "https://webchat-5.onrender.com/chats/groupadd",
         {
           chatId: selectedChat._id,
           userId: user1._id,
@@ -104,7 +104,7 @@ const UpdatedGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => 
     try {
       setLoading(true);
       const { data } = await axios.put(
-        "http://localhost:3000/chats/groupremove",
+        "https://webchat-5.onrender.com/chats/groupremove",
         {
           chatId: selectedChat._id,
           userId: user1._id,

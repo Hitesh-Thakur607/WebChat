@@ -15,7 +15,7 @@ const VerifyEmail = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/users/verify",
+        "https://webchat-5.onrender.com/users/verify",
         { email, token },
         { headers: { "Content-Type": "application/json" }, withCredentials: true }
       );

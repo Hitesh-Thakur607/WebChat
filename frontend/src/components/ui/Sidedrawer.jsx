@@ -19,7 +19,7 @@ export function Sidedrawer({  notification = []}) {
   const onClose = () => setDrawerOpen(false);
   const Navigate = useNavigate();
   const logout =()=>{
-    const response=axios.post("http://localhost:3000/users/logout", 
+    const response=axios.post("https://webchat-5.onrender.com/users/logout", 
       {},{
       headers: { "Content-Type": "application/json" },
                   withCredentials: true,}
@@ -45,7 +45,7 @@ const handleSearch = async() => {
     const config={
       withCredentials: true,
     };
-    const {data} =await axios.get(`http://localhost:3000/users/users/?search=${search}`, config);
+    const {data} =await axios.get(`https://webchat-5.onrender.com/users/users/?search=${search}`, config);
     setLoading(false);
     
     // Flatten all users from all chats into a single array
@@ -62,7 +62,7 @@ const accessChat = async (userId) => {
   try {
     setLoading(true);
     const config = { withCredentials: true };
-    const { data } = await axios.post("http://localhost:3000/chats/", { userId }, config);
+    const { data } = await axios.post("https://webchat-5.onrender.com/chats/", { userId }, config);
     const chatData = data.chat || data;
     if (!chats.find((c) => c._id === chatData._id)) setChats([chatData, ...chats]);
     setSelectedChat(chatData);

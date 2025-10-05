@@ -18,7 +18,7 @@ export const Mychats = ({ fetchAgain }) => {
         },
         withCredentials: true,
       };
-      const { data } = await axios.get("http://localhost:3000/chats/", config);
+      const { data } = await axios.get("https://webchat-5.onrender.com/chats/", config);
       // console.log("Fetched chats:", data); 
       setChats(data);
     } catch (error) {

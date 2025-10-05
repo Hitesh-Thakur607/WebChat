@@ -65,7 +65,7 @@ export default function Signup() {
 
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:3000/users/register",
+        "https://webchat-5.onrender.com/users/register",
         {
           name: formData.name,
           email: formData.email,

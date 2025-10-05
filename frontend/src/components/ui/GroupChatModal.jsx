@@ -41,7 +41,7 @@ const GroupChatModal = ({ onCreate }) => {
   // Fetch all users when modal opens
   const fetchAllUsers = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3000/users/users/", config);
+      const { data } = await axios.get("https://webchat-5.onrender.com/users/users/", config);
       setAllUsers(data);
     } catch (error) {
       toast.error("Failed to fetch users");

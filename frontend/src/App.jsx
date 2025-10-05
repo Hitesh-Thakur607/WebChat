@@ -15,7 +15,7 @@ function App() {
 
     useEffect(() => {
       const response=axios
-        .get("http://localhost:3000/users/me", { withCredentials: true })
+        .get("https://webchat-5.onrender.com/users/me", { withCredentials: true })
         .then(res => {
           setUser(res.data.user);
           setIsAuthenticated(true);
