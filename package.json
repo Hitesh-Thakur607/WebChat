@@ -4,11 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
     "start": "nodemon backend/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-=======
->>>>>>> 1c32bee (hahah)
     "build": "vite build"
   },
   "author": "",
