@@ -3,7 +3,7 @@ import axios from "axios";
 import { getSender } from "../config/ChatLogics";
 import Chatloading from "./Chatloading";
 import { Context } from "../main";
-import  GroupChatModel  from "/home/hitesh-thakur/Documents/VSCode/Webchat/frontend/src/components/ui/GroupChatModal.jsx";
+import  GroupChatModel  from "./ui/GroupChatModal.jsx";
 // import Mychats from '../components/Mychats'
 
 export const Mychats = ({ fetchAgain }) => {

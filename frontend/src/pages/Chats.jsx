@@ -1,5 +1,5 @@
 import { Context } from '../main'
-import { Chatbox } from '/home/hitesh-thakur/Documents/VSCode/Webchat/frontend/src/components/Chatbox.jsx'
+import { Chatbox } from '../components/Chatbox'
 import Mychats from '../components/Mychats'
 import { Sidedrawer } from '../components/ui/Sidedrawer'
 import { useContext } from 'react';
