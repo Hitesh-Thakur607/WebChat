@@ -46,16 +46,22 @@ const register = async (req, res) => {
   const Token = Math.floor(100000 + Math.random() * 900000);
 
   // Send OTP
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: "tv293435@gmail.com",
-      pass: "mzql xkwx uozi hjog",
-    },
-  });
-
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
+    minVersion: 'TLSv1.2'
+  },
+  connectionTimeout: 10000, // 10 seconds
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+});
   try {
     await transporter.sendMail({
       from: `"Library Management" <tv293435@gmail.com>`,
