@@ -51,8 +51,8 @@ const register = async (req, res) => {
     port: 587,
     secure: false,
     auth: {
-      user: "tv293435@gmail.com",
-      pass: "mzql xkwx uozi hjog",
+      user: process.env.EMAIL_USER ,
+      pass: process.env.EMAIL_PASS ,
     },
   });
 
