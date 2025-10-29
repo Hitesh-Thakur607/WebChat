@@ -14,7 +14,8 @@ const app=express();
 connectdb();
 app.use(cors({
     origin: [
-        process.env.frontend_url
+        process.env.frontend_url,
+        "https://yappnet.me"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
