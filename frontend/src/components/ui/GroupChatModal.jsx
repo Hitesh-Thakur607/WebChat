@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { Context } from "../../main";
 import toast from "react-hot-toast";
 import axios from "axios";
+import API_URL from '../../config/api';
 import {
   Modal,
   ModalOverlay,
@@ -41,7 +42,7 @@ const GroupChatModal = ({ onCreate }) => {
   // Fetch all users when modal opens
   const fetchAllUsers = async () => {
     try {
-      const { data } = await axios.get("https://webchat-5.onrender.com/users/users/", config);
+      const { data } = await axios.get(`${API_URL}/users/users/`, config);
       setAllUsers(data);
     } catch (error) {
       toast.error("Failed to fetch users");
@@ -84,7 +85,7 @@ const GroupChatModal = ({ onCreate }) => {
 
     try {
       const { data: response } = await axios.post(
-        'http://localhost:3000/chats/group',
+        `${API_URL}/chats/group`,
         { name, users: JSON.stringify(memberIds) },
         { withCredentials: true }
       );
@@ -106,7 +107,7 @@ const GroupChatModal = ({ onCreate }) => {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        `http://localhost:3000/users/users/?search=${search}`,
+        `${API_URL}/users/users/?search=${search}`,
         { withCredentials: true }
       );
       setLoading(false);

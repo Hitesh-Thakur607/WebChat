@@ -1,23 +1,23 @@
 const req = require("express/lib/request");
 // const isauthenticated =require("./middleware/authentication.js");
 const dotenv = require("dotenv");
+dotenv.config();
 const messageRoutes = require("./routes/messages.js");
 const userRoutes = require("./routes/user.js");
 const chatRoutes = require("./routes/chatRoutes.js");
 const cors = require("cors");
 const connectdb = require("./data/data.js");
-const path = require("path"); // Add this import
-dotenv.config();
-
+const path = require("path"); 
 const express=require("express");
 const cookieParser = require("cookie-parser");
 const app=express();
-// dotenv.config();
-connectdb();  // Connect to MongoDB
+connectdb();
 app.use(cors({
-    origin: process.env.frontend_url,  // Use the environment variable for the frontend URL
+    origin: [
+        process.env.frontend_url
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,  // Allow credentials (cookies, authorization headers, etc.)
+    credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

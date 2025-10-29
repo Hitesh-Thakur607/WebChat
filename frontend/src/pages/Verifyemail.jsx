@@ -3,7 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import "./verify.css"; // 👈 link CSS
-
+import API_URL from "../config/api";
 const VerifyEmail = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -15,7 +15,7 @@ const VerifyEmail = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://webchat-5.onrender.com/users/verify",
+        `${API_URL}/users/verify`,
         { email, token },
         { headers: { "Content-Type": "application/json" }, withCredentials: true }
       );

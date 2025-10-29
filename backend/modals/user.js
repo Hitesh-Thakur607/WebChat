@@ -14,8 +14,8 @@ const userSchema=new mongoose.Schema({
         required:true
     }
     ,picture:{
-        type:String,
-        required:true
+        type:String
+        // required:true
         ,default:"https://iconarchive.com/download/i107272/Flat-Icons/Flat-User-Icon/user.svg"
     }
     ,timestamp:{

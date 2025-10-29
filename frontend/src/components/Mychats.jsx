@@ -5,7 +5,7 @@ import Chatloading from "./Chatloading";
 import { Context } from "../main";
 import  GroupChatModel  from "./ui/GroupChatModal.jsx";
 // import Mychats from '../components/Mychats'
-
+import API_URL from '../config/api';
 export const Mychats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState(null);
   const { selectedChat, setSelectedChat, user, chats, setChats } = useContext(Context);
@@ -18,7 +18,7 @@ export const Mychats = ({ fetchAgain }) => {
         },
         withCredentials: true,
       };
-      const { data } = await axios.get("https://webchat-5.onrender.com/chats/", config);
+      const { data } = await axios.get(`${API_URL}/chats/`, config);
       // console.log("Fetched chats:", data); 
       setChats(data);
     } catch (error) {

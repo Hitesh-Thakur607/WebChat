@@ -9,13 +9,15 @@ import { useContext, useEffect } from "react";
 import axios from 'axios';  
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import API_URL from './config/api';
+
 function App() {
     const { setUser, setIsAuthenticated, setIsAdmin } = useContext(Context);
     const navigate = useNavigate();
 
     useEffect(() => {
-      const response=axios
-        .get("https://webchat-5.onrender.com/users/me", { withCredentials: true })
+      const response = axios
+        .get(`${API_URL}/users/me`, { withCredentials: true })
         .then(res => {
           setUser(res.data.user);
           setIsAuthenticated(true);

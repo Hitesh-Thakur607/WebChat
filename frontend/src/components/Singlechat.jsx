@@ -1,13 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Context } from '../main';
 import { getSenderFull } from "../config/ChatLogics";
 import Profilemodal from "./ui/Profilemodal.jsx";
 import UpdatedGroupChatModal from './ui/UpdatedGroupChatModal';
 import { Spinner, FormControl, Input, Button } from '@chakra-ui/react';
 import axios from "axios";
-import io from 'socket.io-client'; // Add this import
-
-var socket, selectedChatCompare; 
+import io from 'socket.io-client';
+import API_URL from '../config/api';
 
 const Singlechat = ({ fetchAgain, setFetchAgain }) => {
   const [socketConnected, setSocketConnected] = useState(false);
@@ -15,8 +14,11 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
   const [showProfile, setShowProfile] = useState(false);
   const [loading, setLoading] = useState(false);  
   const [newMessage, setNewMessage] = useState(""); 
-  const [chat, setChat] = useState(null);
-  // const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]); // Change to messages array directly
+  
+  // Use useRef to persist socket across re-renders
+  const socketRef = useRef(null);
+  const selectedChatCompareRef = useRef(null);
 
   if (!selectedChat) return <div>No chat selected</div>;
 
@@ -25,69 +27,59 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
     if (!selectedChat) return;
     try {
       const { data } = await axios.get(
-        `https://webchat-5.onrender.com/messages/${selectedChat._id}`,
+        `${API_URL}/messages/${selectedChat._id}`, // Fixed double slash
         { withCredentials: true, headers: { "Content-Type": "application/json" } }
       );
-      setChat({ messages: data });
+      
+      // Set messages directly as array
+      setMessages(Array.isArray(data) ? data : []);
       
       // Only emit if socket is connected
-      if (socket && socketConnected) {
-        socket.emit("join chat", selectedChat._id);
+      if (socketRef.current && socketConnected) {
+        socketRef.current.emit("join chat", selectedChat._id);
       }
     } catch (error) {
       console.error("Error fetching chat:", error);
+      setMessages([]); // Set empty array on error
     }
   }
 
+  // Initialize socket connection only once
   useEffect(() => {
-    // Initialize socket connection
-    socket = io("https://webchat-5.onrender.com");
-    socket.emit("setup", user);
+    if (!user) return;
     
-    socket.on("connected", () => {
+    socketRef.current = io(API_URL);
+    socketRef.current.emit("setup", user);
+    
+    socketRef.current.on("connected", () => {
       console.log("Socket connected");
       setSocketConnected(true);
     });
 
+    // Set up message listener
+    socketRef.current.on("message received", (newMessageReceived) => {
+      if (!selectedChatCompareRef.current || selectedChatCompareRef.current._id !== newMessageReceived.chat._id) {
+        console.log("Message received for different chat");
+      } else {
+        setMessages((prevMessages) => [...prevMessages, newMessageReceived]);
+      }
+    });
+
     // Cleanup function
     return () => {
-      if (socket) {
-        socket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
       }
     };
   }, [user]);
 
+  // Handle chat selection changes
   useEffect(() => {
     if (socketConnected && selectedChat) {
       getChat();
-      selectedChatCompare = selectedChat; // Set the compare variable
+      selectedChatCompareRef.current = selectedChat;
     }
   }, [selectedChat, socketConnected]);
-
-  useEffect(() => {
-    // Only set up message listener when socket is connected
-    if (socket && socketConnected) {
-      socket.on("message received", (newMessageReceived) => {
-        if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
-          // give notification
-          console.log("Message received for different chat");
-        } else {
-          // Add the new message to current chat
-          setChat((prevChat) => ({
-            ...prevChat,
-            messages: [...(prevChat ? prevChat.messages : []), newMessageReceived],
-          }));
-        }
-      });
-    }
-
-    // Cleanup listener
-    return () => {
-      if (socket) {
-        socket.off("message received");
-      }
-    };
-  }, [socketConnected, selectedChat]);
 
   const sendMessage = async (event) => {
     event.preventDefault();
@@ -96,7 +88,7 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
     
     try {
       const { data } = await axios.post(
-        "https://webchat-5.onrender.com/messages/",
+        `${API_URL}/messages/`,
         {
           chatId: selectedChat._id,
           content: newMessage,
@@ -110,13 +102,15 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
       setNewMessage("");
       
       // Emit the new message via socket to other users
-      if (socket && socketConnected) {
-        socket.emit("new message", data);
+      if (socketRef.current && socketConnected) {
+        socketRef.current.emit("new message", data);
       }
-      setChat((prevChat) => ({
-        ...prevChat,
-        messages: [...(prevChat ? prevChat.messages : []), data],
-      }));
+      
+      // Add message to your own chat immediately
+      setMessages((prevMessages) => [...prevMessages, data]);
+      
+      setFetchAgain && setFetchAgain((prev) => !prev);
+      
     } catch (error) {
       console.error("Send message error:", error);
     }
@@ -198,6 +192,7 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
           <UpdatedGroupChatModal onClose={() => {}} />
         )}
       </div>
+      
       {/* Chat messages area */}
       <div style={{
         flex: 1,
@@ -205,8 +200,8 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
         padding: "16px",
         background: "#f5f5f5",
       }}>
-        {chat && chat.messages && chat.messages.length > 0 ? (
-          chat.messages
+        {messages && messages.length > 0 ? (
+          messages
             .filter(msg => msg && msg._id) // Keep messages even if sender is null
             .map((msg) => (
             <div
@@ -241,6 +236,7 @@ const Singlechat = ({ fetchAgain, setFetchAgain }) => {
           </div>
         )}
       </div>
+      
       {/* Message input at the bottom */}
       <form
         onSubmit={sendMessage}

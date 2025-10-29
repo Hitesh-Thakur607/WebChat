@@ -18,7 +18,7 @@ import { ViewIcon } from "@chakra-ui/icons";
 import { Context } from "../../main";
 import axios from "axios";
 import toast from "react-hot-toast";
-
+import API_URL from '../../config/api';
 const UpdatedGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
   const { selectedChat, setSelectedChat, user } = useContext(Context);
   const [isOpen, setIsOpen] = useState(false);
@@ -104,7 +104,7 @@ const UpdatedGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => 
     try {
       setLoading(true);
       const { data } = await axios.put(
-        "https://webchat-5.onrender.com/chats/groupremove",
+        `${API_URL}/chats/groupremove`,
         {
           chatId: selectedChat._id,
           userId: user1._id,
